@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Risk Management Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; background: #f7f7f9; }
+        .container { max-width: 720px; margin: 0 auto; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        h1 { margin-top: 0; font-size: 1.5rem; }
+        form { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .full { grid-column: 1 / -1; }
+        label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
+        input[type="number"], input[type="text"], select { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; }
+        input[type="checkbox"] { transform: scale(1.2); margin-right: 0.5rem; }
+        .actions { display: flex; gap: 0.5rem; }
+        button { padding: 0.6rem 1rem; border-radius: 6px; border: 1px solid #2563eb; background: #2563eb; color: #fff; cursor: pointer; }
+        button.secondary { border-color: #6b7280; background: #fff; color: #374151; }
+        .result { margin-top: 1.25rem; padding: 0.75rem; background: #f1f5f9; border: 1px solid #e5e7eb; border-radius: 6px; }
+        .note { color: #6b7280; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Risk Management Calculator</h1>
+    <p class="note">Fill the form and submit to calculate the recommended lot size. Toggle "Gold or JPY pair" to apply the alternate pip calculation.</p>
+
+    <form action="/calculateLotSize" method="post">
+        <div>
+            <label for="entryPrice">Entry Price</label>
+            <input id="entryPrice" name="entryPrice" type="number" step="0.00001" min="0" value="<%= request.entryPrice || '' %>" required />
+        </div>
+        <div>
+            <label for="stopLossPrice">Stop Loss Price</label>
+            <input id="stopLossPrice" name="stopLossPrice" type="number" step="0.00001" min="0" value="<%= request.stopLossPrice || '' %>" required />
+        </div>
+        <div>
+            <label for="accountBalance">Account Balance</label>
+            <input id="accountBalance" name="accountBalance" type="number" step="0.01" min="0" value="<%= request.accountBalance || '' %>" required />
+        </div>
+        <div>
+            <label for="riskPercentageUWantToRisk">Risk Percentage per Trade</label>
+            <input id="riskPercentageUWantToRisk" name="riskPercentageUWantToRisk" type="number" step="0.01" min="0" max="100" value="<%= request.riskPercentageUWantToRisk || '' %>" required />
+        </div>
+        <div class="full">
+            <label for="goldOrJPYPair">
+                <input id="goldOrJPYPair" name="goldOrJPYPair" type="checkbox" <%= request.goldOrJPYPair ? 'checked' : '' %> />
+                Is Gold/JPY pair?
+            </label>
+        </div>
+        <div class="full actions">
+            <button type="submit">Calculate Lot Size</button>
+            <button type="reset" class="secondary">Reset</button>
+        </div>
+    </form>
+
+    <% if (response) { %>
+    <div class="result">
+        <h3>Result</h3>
+        <p><strong>Recommended Lot Size:</strong> <span><%= response.recommendedLotSize %></span></p>
+        <p><strong>Pips if Lose:</strong> <span><%= response.pipsIfLoose %></span></p>
+    </div>
+    <% } %>
+</div>
+</body>
+</html>
+
